@@ -1,0 +1,10 @@
+Start with task of writing prime number generator function in python
+    - Explain profiling and use with this function as motivation (cProfile)
+    - Use %timeit / %time also to check
+    - Explain xrange briefly and show performance increase
+    - Explain python built-in optimizations (vectorize!)
+
+Introduce to C language & Cython
+    - Make primes.pyx in Cython
+    - Make primes.c in C
+    - Run & Compare timings

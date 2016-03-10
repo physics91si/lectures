@@ -1,0 +1,622 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usepackage{listings}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title (Plain Frame)
+Code Optimization and Cython/C
+\begin_inset Newline newline
+\end_inset
+
+Physics 91SI
+\end_layout
+
+\begin_layout BeginFrame
+How to write fast code
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Enumerate
+Think before starting -- come up with a good algorithm
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Ex: Need to sort a list
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Implement using good programming style and procedures
+\end_layout
+
+\begin_layout Enumerate
+Are you done?
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+How to make existing code faster
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Profile
+\series default
+ your code and identify bottlenecks
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+A 
+\series bold
+profiler
+\series default
+ is a tool that runs your program while measuring the time taken to execute
+ every part of the program 
+\end_layout
+
+\begin_layout Enumerate
+Can help you find the computational 
+\begin_inset Quotes eld
+\end_inset
+
+bottlenecks
+\begin_inset Quotes erd
+\end_inset
+
+ in your code
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Examine bottlenecks and figure out how to make those parts of code less
+ computationally expensive
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[fragile]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Profiling in Python}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Python has a profiler cProfile
+\end_layout
+
+\begin_layout Itemize
+Import the cProfile pacakge and then give it the argument of the function
+ to run (as a string)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+definecolor{keywords}{RGB}{255,0,90} 
+\backslash
+definecolor{comments}{RGB}{0,0,113} 
+\backslash
+definecolor{red}{RGB}{160,0,0} 
+\backslash
+definecolor{green}{RGB}{0,150,0}   
+\backslash
+lstset{language=Python,          basicstyle=
+\backslash
+ttfamily
+\backslash
+small,          keywordstyle=
+\backslash
+color{keywords},         commentstyle=
+\backslash
+color{comments},         stringstyle=
+\backslash
+color{red},         showstringspaces=false,         identifierstyle=
+\backslash
+color{green},         procnamekeys={def,class}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+import cProfile
+\end_layout
+
+\begin_layout Standard
+cProfile.run('string indicating thing to run')
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lets try writing and then profiling some code!
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example
+\end_layout
+
+\begin_layout Standard
+Task: Find the first 
+\begin_inset Formula $N$
+\end_inset
+
+ prime number
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's implement this in python and profile it!
+\end_layout
+
+\begin_layout Standard
+What are the most costly functions that we should try to optimize?
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+The C Programming Language
+\end_layout
+
+\begin_layout Itemize
+Lower level language than python
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Need to deal with your own memory management, pointers, etc.
+ 
+\end_layout
+
+\begin_layout Itemize
+Less error checking and less user friendly
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Compiled language (python is read by an interpreter)
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Static typed language
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+However, being a low-level language makes it 
+\series bold
+much
+\series default
+ faster than languages such as python, thus it is often useful to be able
+ to leverage C's computational efficiency in many large problems.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Thus C/C++ used for most large computational science codes.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example
+\end_layout
+
+\begin_layout Standard
+Let's look at some code and talk about syntax differences.
+ We will examine the same prime number solver code as before, just in 
+\begin_inset Formula $C$
+\end_inset
+
+ this time.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What differences do we see?
+\end_layout
+
+\begin_layout Standard
+How do we run the code?
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Also note that although it is faster, development is harder and more time
+ consuming typically.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Cython
+\end_layout
+
+\begin_layout Itemize
+Cython is a superset of the python programming language
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Supports almost all standard python syntaxes, but also allows C/C++ routines
+ and static types
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Cython actually translates the python code into C and compiles it to later
+ use when executing
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Will not be as fast as pure C though since still uses the python interpreter
+ and libaries to allow for this to run
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Still very useful as can use the C routines/types for the computationally
+ intense parts of our code, while keeping the rest of the code in python
+ still so easy for implementation
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Cython Example
+\end_layout
+
+\begin_layout Standard
+Let's write our prime number finder in Cython now!
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pause
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+How fast is it in comparision to the previous codes?
+\end_layout
+
+\begin_layout Standard
+How difficult was this to do compared to the previous codes?
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
