@@ -9,7 +9,7 @@ class adder(object):
     def __repr__(self):
         return str(self.d)
     def __add__(self, other):
-        print "You told me to add %r and %r!" % (self.d, other)
+        print( "You told me to add %r and %r!" % (self.d, other))
         return self.d + other
 
 class slicer(object):
