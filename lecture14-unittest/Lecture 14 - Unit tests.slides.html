@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-<title>Lecture 13 -- Regular Expressions (2016) slides</title>
+<title>Lecture 14 - Unit tests slides</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -252,7 +252,7 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Lecture-13:-Regular-Expressions-in-Python">Lecture 13: Regular Expressions in Python<a class="anchor-link" href="#Lecture-13:-Regular-Expressions-in-Python">&#182;</a></h2>
+<h1 id="Lecture-14---Testing">Lecture 14 - Testing<a class="anchor-link" href="#Lecture-14---Testing">&#182;</a></h1>
 </div>
 </div>
 </div><div class="fragment">
@@ -261,971 +261,227 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This one is going to be short and pretty fun</p>
-<p>Topics to cover:</p>
+<p>Your final projects are due in two weeks! Presentations on May 31st (+ food!)</p>
+<p>To help customize the assignment to your needs, Milestone 7 will have two parts.</p>
 <ol>
-<li>What are regular expressions and why are they useful?</li>
-<li>How to design and use a regular expression</li>
-<li>When to use and when not to use a regular expression</li>
-</ol>
-
-</div>
-</div>
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's start with a motivating example:</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[121]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Let&#39;s imagine Google buys Stanford and it becomes a commercial institution...</span>
-<span class="c1"># We need to change everyone&#39;s .edu address to a .com!</span>
-
-<span class="n">my_email</span> <span class="o">=</span> <span class="s1">&#39;aguoman@stanford.edu&#39;</span>
-<span class="c1">#my_new_email = ??</span>
-
-<span class="c1">#print(my_new_email)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Some valid options</span>
-
-<span class="c1"># mostly works... replace</span>
-<span class="n">my_email</span> <span class="o">=</span> <span class="s2">&quot;aguoman.educator@stanford.edu&quot;</span>
-<span class="n">my_new_email</span> <span class="o">=</span> <span class="n">my_email</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.edu&quot;</span><span class="p">,</span> <span class="s2">&quot;.com&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">my_new_email</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>aguoman.comcator@stanford.com
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># this is actually good, but not very nice looking... slicing</span>
-<span class="n">my_new_email</span> <span class="o">=</span> <span class="n">my_email</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.com&quot;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">my_new_email</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>aguoman.educator@stanford.com
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># don&#39;t do this... but this works... split/join</span>
-<span class="c1">#...</span>
-<span class="c1"># first get a list</span>
-<span class="n">my_new_email</span> <span class="o">=</span> <span class="n">my_email</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">my_new_email</span><span class="p">)</span>
-
-<span class="c1"># change the elements in the list</span>
-<span class="n">my_new_email</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;edu&#39;</span><span class="p">)</span>
-<span class="n">my_new_email</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;com&#39;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">my_new_email</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&apos;aguoman&apos;, &apos;educator@stanford&apos;, &apos;edu&apos;]
-aguoman.educator@stanford.com
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="BUT...-Some-of-these-don't-work-for-all-emails!">BUT... Some of these don't work for all emails!<a class="anchor-link" href="#BUT...-Some-of-these-don't-work-for-all-emails!">&#182;</a></h4>
-</div>
-</div>
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Would be nice if we could specify only to replace at the end of the string...</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Regular expressions allow us to do this and much more!</p>
-<p>Can...</p>
-<ol>
-<li>match beginning and end of strings</li>
-<li>extract/substitute parts of the string that we're searching</li>
-<li>search on the basis of patterns in strings</li>
-</ol>
-
-</div>
-</div>
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
-
-<span class="c1"># a regular expression is sometimes called a &quot;pattern&quot; because it describes the shape and form of a string</span>
-
-<span class="c1"># as an example</span>
-<span class="n">telephone_number</span> <span class="o">=</span> <span class="s2">&quot;(801)-712-1238&quot;</span>
-
-<span class="c1"># the structure is (numberything)-numberything-numberything</span>
-<span class="c1"># regular expressions give a way of encoding this sort of logic!</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="One-basic-thing-we-can-do-is-&quot;search&quot;">One basic thing we can do is "search"<a class="anchor-link" href="#One-basic-thing-we-can-do-is-&quot;search&quot;">&#182;</a></h4>
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Let&#39;s look at searches:</span>
-
-<span class="c1"># does a string contain a substring?</span>
-<span class="c1"># basic python:</span>
-<span class="k">if</span> <span class="s2">&quot;exam&quot;</span> <span class="ow">in</span> <span class="s2">&quot;We are having an exam next week.&quot;</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oh no!&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Whew&quot;</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Oh no!
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># To do this with the regular expression library is easy</span>
-
-<span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;exam&quot;</span><span class="p">,</span> <span class="s2">&quot;We are having an exam next week.&quot;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oh no! (But thank god for regexes).&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Whew&quot;</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Oh no! (But thank god for regexes).
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># That was too easy, what if we wanted to see if any numbers are in a string?</span>
-
-<span class="n">test_string</span> <span class="o">=</span> <span class="s2">&quot;Does this strin9 contain any numb3r5?&quot;</span>
-
-<span class="c1"># Volunteer python solutions?</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># How about using a set and some functional programming?</span>
-<span class="n">test_string</span> <span class="o">=</span> <span class="s2">&quot;Does this strin9 contain any numb3r5?&quot;</span>
-
-<span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">test_string</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found some numbers!&quot;</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nope. No numbers here.&quot;</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Found some numbers!
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># It&#39;s easier with regexes!</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;[0-9]&quot;</span><span class="p">,</span> <span class="n">test_string</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;_sre.SRE_Match object; span=(15, 16), match=&apos;9&apos;&gt;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># okay... that was kinda cool... how about to test if </span>
-<span class="c1"># a string is a telephone number?</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">telephone_number</span><span class="p">)</span>
-
-<span class="c1"># just to add extra noise</span>
-<span class="n">telephone_number</span> <span class="o">+=</span> <span class="s2">&quot;@&quot;</span>
-
-<span class="c1"># the structure is (numberything)-numberything-numberything</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(801)-712-1238@
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;\(\d+\)-\d+-\d+&quot;</span><span class="p">,</span> <span class="n">telephone_number</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;_sre.SRE_Match object; span=(0, 14), match=&apos;(801)-712-1238&apos;&gt;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Regex-Characters">Regex Characters<a class="anchor-link" href="#Regex-Characters">&#182;</a></h4><p>There's quite a few with special behavior, some of which we've already seen!</p>
-<ol>
-<li>"[ ]" is kind of a like an "or" in Python, it accepts any of the things inside (you can also put ranges inside!)</li>
-<li>"0,1,..9,a..z,A..Z" all match themselves</li>
-<li>"." matches any character (except newline)!</li>
-<li>"\w" word like character</li>
-<li>"\W" non-word like character</li>
-<li>"\s" space like character</li>
-<li>"\d" digit</li>
-</ol>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Also some "control" type characters:</p>
-<ol>
-<li>"+" matches <em>at least</em> one of whatever precedes it <ol>
-<li>"0+" matches at least one "0"</li>
-<li>"[A-Z]+" matches at least one capital letter</li>
+<li>Get a rough draft of your code working! </li>
+<li>Practice explaining your results. You get to choose one of two options:<ol>
+<li>Make a plot of one of your results and annotate it (titles, axis labels, legend). <ul>
+<li>Doesn't have to be final (or accurate), but should explain its significance.</li>
+</ul>
+</li>
+<li>Find a chunk of code (10-20 lines) and figure out how to explain how it currently works and how it’s supposed to work<ul>
+<li>Pick one aspect about which to ask your partner for suggestions. “How can I make <strong>__</strong> work better?”</li>
+</ul>
+</li>
 </ol>
 </li>
-<li>"*" matches <em>any number</em> of whatever precedes it (matches null string as well)</li>
-<li>"?" matches 0 or 1 of whatever precedes it (means <em>optional</em>)</li>
-<li>"^" matches start of string</li>
-<li>"\$" matches end of string</li>
-<li>"\" escapes things!</li>
 </ol>
 
 </div>
 </div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Also... some tricky parens...</p>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Gotcha time...</span>
-
-<span class="c1"># regular expression to match a single \ ?</span>
-<span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">))</span>
-
-<span class="c1"># Eww! Good thing Python has raw (escaped) strings</span>
-<span class="n">raw_test</span> <span class="o">=</span> <span class="s1">r&#39;</span><span class="se">\\</span><span class="s1">&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">raw_test</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">r&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">test</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>\
-&lt;_sre.SRE_Match object; span=(0, 1), match=&apos;\\&apos;&gt;
-\\
-&lt;_sre.SRE_Match object; span=(0, 1), match=&apos;\\&apos;&gt;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[46]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Practice time:</span>
-
-<span class="c1"># match a vector of 4 floats (no space, but comma separated)</span>
-<span class="n">ex_vec</span> <span class="o">=</span> <span class="s2">&quot;(1.231,0.0012348,0,-5.9)&quot;</span>
-
-<span class="c1"># expr = ???</span>
-
-<span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span><span class="n">ex_vec</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;_sre.SRE_Match object; span=(0, 24), match=&apos;(1.231,0.0012348,0,-5.9)&apos;&gt;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[96]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;\(-?[0-9\.]+[0-9]*,-?[0-9\.]+[0-9]*,-?[0-9\.]+[0-9]*,-?[0-9\.]+[0-9]*\)&quot;</span><span class="p">,</span> <span class="n">ex_vec</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;_sre.SRE_Match object; span=(0, 24), match=&apos;(1.231,0.0012348,0,-5.9)&apos;&gt;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Matching-Groups-with-Parentheses">Matching Groups with Parentheses<a class="anchor-link" href="#Matching-Groups-with-Parentheses">&#182;</a></h2>
+<p>Our last lecture on debugging! Teaching you how to test your code like a pro(fessional|grammer)!</p>
+
 </div>
 </div>
 </div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[71]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Let&#39;s modify that last example so that we can print out the numbers in the vector</span>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Today's lecture will be short enough to give you time for a fun lab - building and testing out a calculator!</p>
 
 </div>
 </div>
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
 </div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Unit-tests">Unit tests<a class="anchor-link" href="#Unit-tests">&#182;</a></h3><p>We'll teach you how to use OOP to create your own autotesters</p>
 
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Testing comes in two frameworks:</p>
+<ul>
+<li>Unit tests: modules, classes, functions<ul>
+<li>knowledge of internals</li>
+</ul>
+</li>
+<li>System tests: entire programs<ul>
+<li>treat system as a black-box</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="How-do-I-do-this-'unit-test'?">How do I do this 'unit test'?<a class="anchor-link" href="#How-do-I-do-this-'unit-test'?">&#182;</a></h3><p>First, import the built-in package, <code>unittest</code></p>
+
+<pre><code>- import unittest</code></pre>
+
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Create a subclass of the class unittest.TestCase.</p>
+
+<pre><code>- class TestMyModule(unittest.TestCase)</code></pre>
+
+</div>
+</div>
 </div></div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;\(-?[0-9\.]+[0-9]*,-?[0-9\.]+[0-9]*,-?[0-9\.]+[0-9]*,-?[0-9\.]+[0-9]*\)&quot;</span><span class="p">,</span> <span class="n">ex_vec</span><span class="p">)</span>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Define methods that contain individual tests</p>
 
-<span class="c1">#print(match.group(1))</span>
-<span class="c1">#print(match.group(2))</span>
-<span class="c1">#print(match.group(3))</span>
-<span class="c1">#print(match.group(4))</span>
-</pre></div>
+<pre><code>- def test_tostring(self):</code></pre>
 
 </div>
 </div>
-</div>
-
 </div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Extras">Extras<a class="anchor-link" href="#Extras">&#182;</a></h4><p>The 're' module has a lot of other features, including string replace, split, findall... etc.</p>
-<p>Mostly search gets the job done, but it's good to know the module has all this stuff!</p>
+<p>How do you check that a method behaves the way you want?</p>
 
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Review-Slide">Review Slide<a class="anchor-link" href="#Review-Slide">&#182;</a></h2>
+<pre><code>def test_tostring(self):
+    #what goes here?</code></pre>
+
 </div>
 </div>
 </div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="c1"># CHEATSHEET at regexr website (much better than what I have here)</span>
-
-<span class="c1"># use &quot;[]&quot; to match any of the things inside</span>
-
-<span class="c1"># +, *, ? are for matching at least one, any number, and 0 or 1 things</span>
-
-<span class="c1"># a-z, A-Z, 3-8, etc... ranges!</span>
-
-<span class="c1"># \d digits</span>
-
-<span class="c1"># \w word characters</span>
-
-<span class="c1"># \W non word characters</span>
-
-<span class="c1"># () for a group</span>
-
-<span class="c1"># just as an example... regular expressions can get complicated!</span>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Special <strong>assert</strong> functions:</p>
+<ul>
+<li><p>assertEqual() - takes in two parameters (any type)</p>
+</li>
+<li><p>assertTrue() - takes in a boolean parameter</p>
+</li>
+<li><p>assertFalse() - takes in a boolean parameter</p>
+</li>
+<li><p>assertRaises() - takes in an Exception parameter</p>
+</li>
+</ul>
 
 </div>
 </div>
-</div>
-
 </div></div></section></section><section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[84]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#And a perl regular expression to match EMAIL!!! (properly)</span>
-
-<span class="c1">#Don&#39;t do this or I&#39;ll cry.</span>
-
-<span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]</span>
-<span class="p">)</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>
-\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(</span>
-<span class="o">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span>
-\<span class="n">t</span><span class="p">]))</span><span class="o">*</span><span class="s2">&quot;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*))*@(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:[^()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]</span> \<span class="mi">000</span><span class="o">-</span>\<span class="mi">0</span>
-<span class="mi">31</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\
-<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+</span>
-<span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:</span>
-<span class="p">(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*|</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z</span>
-<span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span>
-<span class="o">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)</span><span class="o">*</span>\<span class="o">&lt;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:</span><span class="o">@</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\</span>
-<span class="s2">r</span><span class="se">\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[</span>
- \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)</span>
-<span class="o">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">]</span>
-<span class="p">)</span><span class="o">*</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:,</span><span class="o">@</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[</span>
- \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span>
-<span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]</span>
-<span class="p">)</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span><span class="p">)</span>
-<span class="o">*</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)</span><span class="err">?</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+</span>
-<span class="o">|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>
-\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span>
-\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span>
-<span class="p">]))</span><span class="o">*</span><span class="s2">&quot;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*))*@(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:[^()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]</span> \<span class="mi">000</span><span class="o">-</span>\<span class="mi">031</span>
-<span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span>
-<span class="o">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?</span>
-<span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="o">?</span>
-<span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span>\<span class="o">&gt;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?</span>
-<span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?</span>
-<span class="p">[</span> \<span class="n">t</span><span class="p">]))</span><span class="o">*</span><span class="s2">&quot;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)*:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:(?:(?:[^()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]</span> 
-\<span class="mi">000</span><span class="o">-</span>\<span class="mi">031</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span>
-\\<span class="o">.|</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">]))</span><span class="o">*</span><span class="s2">&quot;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)(?:\.(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:[^()&lt;&gt;</span>
-<span class="o">@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|&quot;</span>
-<span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span>\<span class="s2">&quot;</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*@</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">]</span>
-<span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\
-<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)(?:\.(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?</span>
-<span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[</span>
-\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*|</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span>
-\<span class="mi">031</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(</span>
-<span class="o">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">]))</span><span class="o">*</span><span class="s2">&quot;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)*\&lt;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:@(?:[^()&lt;&gt;@,;</span>
-<span class="p">:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|\[([</span>
-<span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;</span>
-<span class="o">.</span>\<span class="p">[</span>\<span class="p">]</span> \<span class="mi">000</span><span class="o">-</span>\<span class="mi">031</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\
-<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:,</span><span class="o">@</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.</span><span class="se">\</span>
-<span class="s2">[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\</span>
-<span class="s2">r</span><span class="se">\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)(?:\.(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:[^()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]</span> 
-\<span class="mi">000</span><span class="o">-</span>\<span class="mi">031</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span>
-<span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span><span class="p">)</span><span class="o">*</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)</span><span class="err">?</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\0</span>
-<span class="mi">00</span><span class="o">-</span>\<span class="mi">031</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span>
-<span class="o">.|</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">]))</span><span class="o">*</span><span class="s2">&quot;(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)(?:\.(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*(?:[^()&lt;&gt;@,</span>
-<span class="p">;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|&quot;</span><span class="p">(</span><span class="o">?</span>
-<span class="p">:[</span><span class="o">^</span>\<span class="s2">&quot;</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*@</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span>
-<span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.</span>
-\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span>
-<span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]</span>
-<span class="p">]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span>\<span class="o">&gt;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:,</span>\<span class="n">s</span><span class="o">*</span><span class="p">(</span>
-<span class="o">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\
-<span class="s2">&quot;.\[\]]))|&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span>\<span class="s2">&quot;</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span>
-<span class="o">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[</span>
-\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span>
-<span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*@</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span>
-<span class="p">])</span><span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="o">?</span>
-<span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|</span>
-\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*|</span><span class="p">(</span><span class="err">?</span><span class="p">:</span>
-<span class="p">[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[</span><span class="se">\</span>
-<span class="s2">]]))|&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span>\<span class="s2">&quot;</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)</span><span class="o">*</span>\<span class="o">&lt;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span>
-<span class="o">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:</span><span class="o">@</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span>
-<span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)(?:\.(?:(?:</span><span class="se">\r\n</span><span class="s2">)</span>
-<span class="o">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;</span>
-<span class="o">@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*))*(?:,@(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[</span>
- \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,</span>
-<span class="p">;:</span>\\<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)(?:\.(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]</span>
-<span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\
-<span class="s2">&quot;.\[\]]))|\[([^\[\]</span><span class="se">\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.)*\](?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*))*)*:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])*)?</span>
-<span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[&quot;</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.</span>
-\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>
-\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z|(?=[\[</span>
-<span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span><span class="s2">&quot;(?:[^</span><span class="se">\&quot;\r\\</span><span class="s2">]|</span><span class="se">\\</span><span class="s2">.|(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">]))*&quot;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span>
-<span class="o">*</span><span class="p">))</span><span class="o">*@</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])</span>
-<span class="o">+|</span>\<span class="n">Z</span><span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">)(</span><span class="err">?</span><span class="p">:</span>\
-<span class="o">.</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="err">?</span><span class="p">:[</span><span class="o">^</span><span class="p">()</span><span class="o">&lt;&gt;@</span><span class="p">,;:</span>\\<span class="s2">&quot;.\[\] </span><span class="se">\000</span><span class="s2">-</span><span class="se">\031</span><span class="s2">]+(?:(?:(?:</span><span class="se">\r\n</span><span class="s2">)?[ </span><span class="se">\t</span><span class="s2">])+|\Z</span>
-<span class="o">|</span><span class="p">(</span><span class="err">?</span><span class="o">=</span><span class="p">[</span>\<span class="p">[</span><span class="s2">&quot;()&lt;&gt;@,;:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">.</span>\<span class="p">[</span>\<span class="p">]]))</span><span class="o">|</span>\<span class="p">[([</span><span class="o">^</span>\<span class="p">[</span>\<span class="p">]</span>\<span class="n">r</span>\\<span class="p">]</span><span class="o">|</span>\\<span class="o">.</span><span class="p">)</span><span class="o">*</span>\<span class="p">](</span><span class="err">?</span><span class="p">:(</span><span class="err">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span>\<span class="o">&gt;</span><span class="p">(</span><span class="err">?</span><span class="p">:(</span>
-<span class="o">?</span><span class="p">:</span>\<span class="n">r</span>\<span class="n">n</span><span class="p">)</span><span class="err">?</span><span class="p">[</span> \<span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">))</span><span class="o">*</span><span class="p">)</span><span class="err">?</span><span class="p">;</span>\<span class="n">s</span><span class="o">*</span><span class="p">)</span>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We're going to test out some methods in the <code>string</code> class</p>
 
 </div>
 </div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansicyan">  File </span><span class="ansigreen">&quot;&lt;ipython-input-84-889289e42b8f&gt;&quot;</span><span class="ansicyan">, line </span><span class="ansigreen">5</span>
-<span class="ansired">    (?:(?:\r\n)?[ \t])*(?:(?:(?:[^()&lt;&gt;@,;:\\&quot;.\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t]</span>
-     ^
-<span class="ansired">SyntaxError</span><span class="ansired">:</span> invalid syntax
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Just for fun!!!</span>
-
-<span class="kn">import</span> <span class="nn">turtle</span>
-
-<span class="n">turtle</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
-<span class="n">turtle</span><span class="o">.</span><span class="n">begin_fill</span><span class="p">()</span>
-<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-    <span class="n">turtle</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
-    <span class="n">turtle</span><span class="o">.</span><span class="n">left</span><span class="p">(</span><span class="mi">170</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">turtle</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">break</span>
-<span class="n">turtle</span><span class="o">.</span><span class="n">end_fill</span><span class="p">()</span>
-<span class="n">turtle</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansired">---------------------------------------------------------------------------</span>
-<span class="ansired">KeyboardInterrupt</span>                         Traceback (most recent call last)
-<span class="ansigreen">&lt;ipython-input-12-68ff028d4af4&gt;</span> in <span class="ansicyan">&lt;module&gt;</span><span class="ansiblue">()</span>
-<span class="ansigreen">     11</span>         <span class="ansigreen">break</span><span class="ansiblue"></span>
-<span class="ansigreen">     12</span> turtle<span class="ansiblue">.</span>end_fill<span class="ansiblue">(</span><span class="ansiblue">)</span><span class="ansiblue"></span>
-<span class="ansigreen">---&gt; 13</span><span class="ansired"> </span>turtle<span class="ansiblue">.</span>done<span class="ansiblue">(</span><span class="ansiblue">)</span><span class="ansiblue"></span>
-
-<span class="ansigreen">/Users/Andrew/anaconda3/lib/python3.5/turtle.py</span> in <span class="ansicyan">mainloop</span><span class="ansiblue">()</span>
-
-<span class="ansigreen">/Users/Andrew/anaconda3/lib/python3.5/turtle.py</span> in <span class="ansicyan">mainloop</span><span class="ansiblue">(self)</span>
-<span class="ansigreen">    811</span> <span class="ansiblue"></span>
-<span class="ansigreen">    812</span>         &quot;&quot;&quot;
-<span class="ansigreen">--&gt; 813</span><span class="ansired">         </span>TK<span class="ansiblue">.</span>mainloop<span class="ansiblue">(</span><span class="ansiblue">)</span><span class="ansiblue"></span>
-<span class="ansigreen">    814</span> <span class="ansiblue"></span>
-<span class="ansigreen">    815</span>     <span class="ansigreen">def</span> textinput<span class="ansiblue">(</span>self<span class="ansiblue">,</span> title<span class="ansiblue">,</span> prompt<span class="ansiblue">)</span><span class="ansiblue">:</span><span class="ansiblue"></span>
-
-<span class="ansigreen">/Users/Andrew/anaconda3/lib/python3.5/tkinter/__init__.py</span> in <span class="ansicyan">mainloop</span><span class="ansiblue">(n)</span>
-<span class="ansigreen">    403</span> <span class="ansigreen">def</span> mainloop<span class="ansiblue">(</span>n<span class="ansiblue">=</span><span class="ansicyan">0</span><span class="ansiblue">)</span><span class="ansiblue">:</span><span class="ansiblue"></span>
-<span class="ansigreen">    404</span>     <span class="ansiblue">&quot;&quot;&quot;Run the main loop of Tcl.&quot;&quot;&quot;</span><span class="ansiblue"></span>
-<span class="ansigreen">--&gt; 405</span><span class="ansired">     </span>_default_root<span class="ansiblue">.</span>tk<span class="ansiblue">.</span>mainloop<span class="ansiblue">(</span>n<span class="ansiblue">)</span><span class="ansiblue"></span>
-<span class="ansigreen">    406</span> <span class="ansiblue"></span>
-<span class="ansigreen">    407</span> getint <span class="ansiblue">=</span> int<span class="ansiblue"></span>
-
-<span class="ansired">KeyboardInterrupt</span>: </pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
+</div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">unicodedata</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Saved in string_test.py file</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">unicodedata</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s1">&#39;SLICE OF PIZZA&#39;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">unicodedata</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s1">&#39;👌&#39;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">unicodedata</span><span class="o">.</span><span class="n">numeric</span><span class="p">(</span><span class="s1">&#39;¼&#39;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="c1"># string module is already imported</span>
+
+<span class="k">class</span> <span class="nc">TestStringMethods</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+            
+    <span class="k">def</span> <span class="nf">test_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s1">&#39;FOO&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_isupper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s1">&#39;FOO&#39;</span><span class="o">.</span><span class="n">isupper</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="s1">&#39;Foo&#39;</span><span class="o">.</span><span class="n">isupper</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">test_split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;hello world&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+        <span class="c1"># check that s.split fails when the separator is not a string</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">#if __name__ == &#39;__main__&#39;:</span>
+<span class="c1">#   unittest.main()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Individual test method are of the form:</p>
+
+<pre><code>def test_&lt;methodname&gt;(self):
+    #self is an instance of unittest.TestCase
+    self.assertFalse(...)</code></pre>
+<p>Note that checking if an error is raised requires a special <code>with</code>  environment in order to first  <strong>catch</strong> the error.</p>
+
+<pre><code>with self.assertRaises(TypeError)
+    &lt;do something that raises a TypeError&gt;</code></pre>
+
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Okay,-how-do-I-run-the-tests?">Okay, how do I run the tests?<a class="anchor-link" href="#Okay,-how-do-I-run-the-tests?">&#182;</a></h4><p>Type this in the the command line.</p>
+
+<pre><code>python string_test.py</code></pre>
+<p>Add a <code>-v</code> in order to make it 'verbose' and give individual test results</p>
+
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[87]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python string_test.py
 </pre></div>
 
 </div>
@@ -1238,13 +494,427 @@ aguoman.educator@stanford.com
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>🍕
-OK HAND SIGN
-0.25
+<pre>...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
 </pre>
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[109]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python string_test.py -v
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>test_isupper (__main__.TestStringMethods) ... ok
+test_split (__main__.TestStringMethods) ... ok
+test_upper (__main__.TestStringMethods) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[108]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Failed version!!!</span>
+
+<span class="o">!</span>python string_test.py -v
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>test_isupper (__main__.TestStringMethods) ... FAIL
+test_split (__main__.TestStringMethods) ... ok
+test_upper (__main__.TestStringMethods) ... ok
+
+======================================================================
+FAIL: test_isupper (__main__.TestStringMethods)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;string_test.py&quot;, line 10, in test_isupper
+    self.assertTrue(&apos;Foo&apos;.isupper())
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Setup-command">Setup command<a class="anchor-link" href="#Setup-command">&#182;</a></h3>
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's say you want to create an instance of a class to use in your test case methods.</p>
+<p>Instead of creating the object in every method, why not define it once and then reuse it?</p>
+<p>This is where the <code>setUp()</code> method comes in handy.</p>
+
+</div>
+</div>
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[116]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sets</span> 
+
+<span class="k">class</span> <span class="nc">TestSetMethods</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">sets</span><span class="o">.</span><span class="n">Set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">sets</span><span class="o">.</span><span class="n">Set</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+    
+    <span class="k">def</span> <span class="nf">test_or</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span> <span class="p">,</span> <span class="s1">&#39;wrong union&#39;</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">test_and</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">,</span> <span class="s1">&#39;wrong intersection&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">test_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">E</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="p">,</span> <span class="s1">&#39;wrong difference&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div></section></section><section><section>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[106]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python set_test.py -v
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>test_and (__main__.TestSetMethods) ... ok
+test_or (__main__.TestSetMethods) ... ok
+test_sub (__main__.TestSetMethods) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></section></section><section><section>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[121]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Failed version!!!</span>
+<span class="o">!</span>python set_test.py -v
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>test_and (__main__.TestSetMethods) ... ok
+test_or (__main__.TestSetMethods) ... ok
+test_sub (__main__.TestSetMethods) ... FAIL
+
+======================================================================
+FAIL: test_sub (__main__.TestSetMethods)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;set_test.py&quot;, line 20, in test_sub
+    self.assertEqual(E.data, [1,2] , &apos;wrong difference&apos;)
+AssertionError: Lists differ: [3] != [1, 2]
+
+First differing element 0:
+3
+1
+
+Second list contains 1 additional elements.
+First extra element 1:
+2
+
+- [3]
++ [1, 2] : wrong difference
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+FAILED (failures=1)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Q:-How-do-I-run-my-tests-without-resorting-to-the-command-line?">Q: How do I run my tests without resorting to the command line?<a class="anchor-link" href="#Q:-How-do-I-run-my-tests-without-resorting-to-the-command-line?">&#182;</a></h3>
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>First of all tests should be run outside of your program</p>
+<p>Reasons:</p>
+<ol>
+<li>It's really <strong>easy</strong> to run the test.py as an individual module. </li>
+<li>There is less temptation to change test code to fit the code it tests without a good reason     </li>
+<li>Tested code can be refactored more easily (e.g. rewritten in C)</li>
+</ol>
+
+</div>
+</div>
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><em>But</em>...there IS a way to do it. This involves packaging your test cases into a <strong>test suite</strong></p>
+
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[127]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Define a suite</span>
+<span class="n">suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">()</span>
+
+<span class="c1"># Can add single tests from other test cases</span>
+<span class="n">suite</span><span class="o">.</span><span class="n">addTest</span><span class="p">(</span><span class="n">TestStringMethods</span><span class="p">(</span><span class="s1">&#39;test_split&#39;</span><span class="p">))</span>
+<span class="n">suite</span><span class="o">.</span><span class="n">addTest</span><span class="p">(</span><span class="n">TestSetMethods</span><span class="p">(</span><span class="s1">&#39;test_or&#39;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[128]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Loads the test cases from the TestSetMethods</span>
+<span class="n">suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestLoader</span><span class="p">()</span><span class="o">.</span><span class="n">loadTestsFromTestCase</span><span class="p">(</span><span class="n">TestSetMethods</span><span class="p">)</span>
+
+<span class="c1"># Run your suite using verbose mode</span>
+<span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span> 
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>test_and (__main__.TestSetMethods) ... ok
+test_or (__main__.TestSetMethods) ... ok
+test_sub (__main__.TestSetMethods) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.004s
+
+OK
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[128]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;unittest.runner.TextTestResult run=3 errors=0 failures=0&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Discovery-magic">Discovery magic<a class="anchor-link" href="#Discovery-magic">&#182;</a></h3><p>You can also discover and run all your test cases at the same time!</p>
+<p><code>discover</code> automagically finds your test files and run them.</p>
+
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[105]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>python -m unittest discover -p <span class="s1">&#39;*_test.py&#39;</span> -v
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>test_and (set_test.TestSetMethods) ... ok
+test_or (set_test.TestSetMethods) ... ok
+test_sub (set_test.TestSetMethods) ... ok
+test_isupper (string_test.TestStringMethods) ... ok
+test_split (string_test.TestStringMethods) ... ok
+test_upper (string_test.TestStringMethods) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In summary, unit test is a framework for building checks for every modules you use.</p>
+<p>It's an <strong>essential</strong> part of good Object-Oriented Programming.</p>
+<p>Importantly, it needs to be <em>fast</em>, since you will run it frequently. Practically speaking, this means to choose small test cases.</p>
+<p>But we'll have a guest lecture talk about optimization on Thursday!</p>
+
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Summary </span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="c1"># define your test case as a subclass of TestCase</span>
+<span class="k">class</span> <span class="nc">TestMod</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+            
+<span class="c1"># define test case methods</span>
+<span class="k">def</span> <span class="nf">test_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    
+<span class="c1"># various assert statements    </span>
+<span class="n">assertEqual</span><span class="p">(</span><span class="o">...</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">assertFalse</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># assertRaises has special syntax</span>
+<span class="k">with</span> <span class="n">assertRaises</span><span class="p">(</span><span class="o">...</span><span class="n">Error</span><span class="p">)</span>
+    <span class="o">...</span>
+
+<span class="c1"># Allows you to run from command line</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+</div>
 </div>
 </div>
 
